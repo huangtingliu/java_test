@@ -1,0 +1,18 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huangtl.idempotent.dao.OrderDao">
+
+    <select id="queryList" resultType="Map">
+        select * from orders
+    </select>
+
+    <update id="updateOrder">
+        update orders set order_status = #{orderStatus} where order_id = #{orderId}
+    </update>
+
+    <update id="updateOrderByVersion">
+        update orders set order_status = #{orderStatus},version = 1 where order_id = #{orderId} and version = 0
+    </update>
+
+</mapper>

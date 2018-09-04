@@ -1,0 +1,15 @@
+静态代理：
+    多个实现类（A/B）实现了接口I的方法hello。
+    在B中定义了一个A类变量，B的hello方法调用了A的hello方法，并在方法前后增加代理的业务。
+    B就是静态代理类，因为它代理了A
+
+动态代理：
+    需要用到两个java自带的类：Proxy和InvocationHandler
+    Proxy类：负责创建代理对象---Proxy.newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHandler h)
+    InvocationHandler类：负责具体的业务执行逻辑，实现该类的invoke方法---invoke(Object proxy, Method method, Object[] args)
+    实现：
+        1.定义一个接口I和实现类A
+        2.定义一个代理类MyProxy实现InvocationHandler，构造函数可传入需要代理的对象，
+          实现invoke方法调用代理对象的方法，并在前后做代理业务处理
+        3.调用代理类
+        --
