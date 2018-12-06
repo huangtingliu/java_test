@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 5082
   tomcat:
     uri-encoding: utf-8
 #  address: 127.0.0.1

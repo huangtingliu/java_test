@@ -12,13 +12,13 @@ import java.util.Set;
 public class RedisTest {
 
     public static void main(String[] args) {
-        //redisString();
+        redisString();
         //redisList();
         //redisKeys();
         //redisSet();
         //redisZSet();
-        redisChannel();
-        redisChannel();
+//        redisChannel();
+//        redisChannel();
     }
 
     public static Jedis getJedis(){
