@@ -1,48 +1,76 @@
-package com.huangtl.weixin;
+package com.huangtl.weixin.utils;
+
 
 import com.huangtl.redis.RedisTest;
 import com.huangtl.utils.HttpUtils;
 import com.huangtl.utils.JsonUtils;
-import com.huangtl.weixin.bean.result.AccessToken;
+import com.huangtl.weixin.Constants;
 import com.huangtl.weixin.bean.Menu;
+import com.huangtl.weixin.bean.result.AccessToken;
 import com.huangtl.weixin.bean.result.WxResult;
 import com.huangtl.weixin.enums.WxCodeEnum;
-import com.huangtl.weixin.service.MsgService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class WxUtils {
+/**
+ * 公众号工具类
+ */
+public class MPUtils {
+
 
     /**
-     * 获取请求结果封装类
-     * @param result
+     * 检查token的POST请求，如果是token过期失败会重新获取token并使用新的token重新提交
+     * @param url 请求路径 accessToken参数一点要在第一个参数
+     * @param param 业务请求参数，不包括accessToken
+     * @param accessToken accessToken
+     * @param urlParam 请求路径中携带的参数
      * @return
      */
-    public static WxResult getWxResult(String result) {
-        WxResult wxResult = null;
-        try {
-            wxResult = JsonUtils.jsonToPojo(result, WxResult.class);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static String postCheckToken(String url,String param,String accessToken,String ...urlParam){
+        url = url.replaceFirst("%s",accessToken);
+        for(int i =0;i<urlParam.length;i++){
+            url = url.replaceFirst("%s",urlParam[i]);
         }
-        return wxResult;
+        String result = HttpUtils.post(url, param);
+        WxResult wxResult = WxUtils.getWxResult(result);
+        if(!wxResult.isSuccess()){
+            System.out.println(WxCodeEnum.getMsgByCode(wxResult.getErrcode()));
+            if(isAccessTokenErr(wxResult)){
+                result = HttpUtils.post(String.format(url, getAccessToken(),urlParam), param);
+            }else {
+
+            }
+        }
+        return result;
     }
     /**
-     * 获取请求结果封装类
-     * @param result
-     * @return
+     *
+     * 检查token的GET请求，如果是token过期失败会重新获取token并使用新的token重新提交
+     * @param url 请求路径 accessToken参数一点要在第一个参数
+     * @param accessToken accessToken
+     * @param urlParam 请求路径中携带的参数
+     * @+
      */
-    public static <T> T getWxResult(String result,Class<T> clazz) {
-        T t = null;
-        try {
-            t = JsonUtils.jsonToPojo(result, clazz);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static String getCheckToken(String url,String accessToken,String... urlParam){
+        url = url.replaceFirst("%s",accessToken);
+        for(int i =0;i<urlParam.length;i++){
+            url = url.replaceFirst("%s",urlParam[i]);
         }
-        return t;
+        String result = HttpUtils.get(url);
+        WxResult wxResult = WxUtils.getWxResult(result);
+        if(!wxResult.isSuccess()){
+            System.out.println(WxCodeEnum.getMsgByCode(wxResult.getErrcode()));
+            if(isAccessTokenErr(wxResult)){
+                result = HttpUtils.get(String.format(url, getAccessToken(),urlParam));
+            }else {
+
+            }
+        }
+        return result;
     }
 
     /**
@@ -76,24 +104,13 @@ public class WxUtils {
     */
     public static boolean checkToken(String signature,String timestamp,String nonce,String echostr){
 
-        String sortStr = sort(Constants.TOKEN, timestamp, nonce);//排序串
+        String sortStr = WxUtils.sort(Constants.TOKEN, timestamp, nonce);//排序串
         String sha1Str = DigestUtils.sha1Hex(sortStr);//sha1加密串
 
         System.out.println("加密后："+sha1Str);
 
         return sha1Str.equals(signature);
 
-    }
-
-    /**
-     * 字典序排序
-     * @return
-     */
-    public static String sort(String token,String timestamp,String nonce){
-        String[] arr = { token, timestamp, nonce };
-        Arrays.sort(arr); // 字典序排序
-        String str = arr[0] + arr[1] + arr[2];
-        return str;
     }
 
 
@@ -110,18 +127,18 @@ public class WxUtils {
      */
     public static String getNewAccessToken(){
 
-        String result = HttpUtils.get(String.format(Constants.URL_ACCESS_TOKEN, Constants.appID,Constants.appsecret));
+        String result = HttpUtils.get(String.format(Constants.URL_ACCESS_TOKEN, Constants.MP_APPID,Constants.MP_APPSECRET));
         if(!StringUtils.isEmpty(result)){
             AccessToken token = JsonUtils.jsonToPojo(result, AccessToken.class);
             if(token.isSuccess()){
-                RedisTest.getJedis().set(Constants.ACCESS_TOKEN_KEY,token.getAccess_token());
+                RedisTest.getJedis().set(Constants.MP_ACCESS_TOKEN_KEY,token.getAccess_token());
                 return token.getAccess_token();
             }else{
                 System.out.println(WxCodeEnum.getMsgByCode(token.getErrcode()));
             }
         }
 
-        RedisTest.getJedis().del(Constants.ACCESS_TOKEN_KEY);
+        RedisTest.getJedis().del(Constants.MP_ACCESS_TOKEN_KEY);
 
         return null;
     }
@@ -132,7 +149,7 @@ public class WxUtils {
      */
     public static String getAccessToken(){
 
-        String redisAccessToken = RedisTest.getJedis().get(Constants.ACCESS_TOKEN_KEY);
+        String redisAccessToken = RedisTest.getJedis().get(Constants.MP_ACCESS_TOKEN_KEY);
         if(!StringUtils.isEmpty(redisAccessToken)){
             return redisAccessToken;
         }else{
@@ -151,50 +168,55 @@ public class WxUtils {
         Menu menu = new Menu();
 
         //主菜单，最多三个
-        Menu button1 = new Menu("click","周六五黑","test","");
-        Menu button2 = new Menu("view","英雄介绍","test","www.lol.com");
-        Menu button3 = new Menu("","排行榜","","");
+        Menu button1 = new Menu("click","生活服务","live","");
+        Menu button2 = new Menu("","加盟商","","");
+        Menu button3 = new Menu("click","关于我们","aboult","");
 
         //子菜单
-        Menu child1 = new Menu("view","搜索","","http://www.soso.com/");
-        Menu child2 = new Menu("click","排行榜","排行","");
+        Menu child1 = new Menu("miniprogram","工单管理","order",Constants.MINI_PATH);
+        child1.setAppid(Constants.MINI_APPID);
+        child1.setPagepath("pages/login/login");
+        Menu child2 = new Menu("click","申请加盟","approval","");
         List<Menu> subButton = new ArrayList<>();
         subButton.add(child1);
         subButton.add(child2);
-        button3.setSub_button(subButton);
+        button2.setSub_button(subButton);
 
         List<Menu> button = new ArrayList<>();
         button.add(button1);
-//        button.add(button2);
+        button.add(button2);
         button.add(button3);
         menu.setButton(button);
 
         try {
             String menuJson = JsonUtils.objectToJson(menu);
-            String result = HttpUtils.post(String.format(Constants.URL_MENU_CREATE, getAccessToken()), menuJson);
-            WxResult wxResult = getWxResult(result);
-            if(!wxResult.isSuccess()){
-                System.out.println(WxCodeEnum.getMsgByCode(wxResult.getErrcode()));
-                if(isAccessTokenErr(wxResult)){
-                    return createMenu();
-                }else {
-                    return false;
-                }
-            }
 
+            System.out.println(menuJson);
+            String result = postCheckToken(Constants.URL_MENU_CREATE,menuJson, getAccessToken());
+            WxResult wxResult = WxUtils.getWxResult(result);
+
+            return wxResult.isSuccess();
         } catch (IOException e) {
             e.printStackTrace();
 
             return false;
         }
 
-        return true;
-
     }
 
     public static void main(String[] args) {
 
-        String testOpenid = "om9ct1GJoXoxg0xZ4iUHlv1xOo6c";
+//        String acctoken = "16_y4K_lgg6HkN6WB1Q2YN7sM-Jb1EaC1J5ZMTVJr9IjbEAeF2LsFvjMHZ5YMpYJvdCEljtjM4TI4IJim8rG-hCB7A-jMmz0Nc9-rcrNO9I9j3u9FbFEprxrszvnfYULOfAGAGXA";
+//        String userInfoResult = MPUtils.getCheckToken(Constants.URL_USER_INFO_GET, acctoken, "oo-LgwcCXCz_tMTo1qZg_pszUWZE".toString());
+//        System.out.println(userInfoResult);
+
+
+/**获取随机数*/
+//        for (int i=0;i<=31;i++){
+//            String v = String.valueOf ((int)((Math.random() * 9 +1) * 100000));
+//            System.out.println(v);
+//        }
+//        String testOpenid = "om9ct1GJoXoxg0xZ4iUHlv1xOo6c";
 
         /**获取并保存新的accessToken*/
 //        getNewAccessToken();
@@ -211,8 +233,9 @@ public class WxUtils {
 //        System.out.println(userInfo);
 
         /**发送模板消息*/
-//        MsgService.sendTemplateMsg("om9ct1GJoXoxg0xZ4iUHlv1xOo6c");
-        MsgService.sendTemplateMsg2("om9ct1EGNPKFpHZ5Ecjptc1nIG6c");
+//        JedisUtils.del(Constants.ACCESS_TOKEN_KEY);
+//        MsgService.sendTemplateMsg(testOpenid);
+//        MsgService.sendTemplateMsg2(testOpenid);
 
 
         /**获取自动回复规则*/

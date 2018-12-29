@@ -11,8 +11,10 @@ public class Miniprogram {
     @JsonProperty(value = "appid")
     private String appid;
 
-    @JsonProperty(value = "pagepath")
-    private String pagepath;
+//    @JsonProperty(value = "pagepath")
+//    private String pagepath;
+    @JsonProperty(value = "path")
+    private String path;
 
     public String getAppid() {
         return appid;
@@ -22,11 +24,11 @@ public class Miniprogram {
         this.appid = appid;
     }
 
-    public String getPagepath() {
-        return pagepath;
+    public String getPath() {
+        return path;
     }
 
-    public void setPagepath(String pagepath) {
-        this.pagepath = pagepath;
+    public void setPath(String path) {
+        this.path = path;
     }
 }

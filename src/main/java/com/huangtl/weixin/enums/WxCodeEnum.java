@@ -12,7 +12,7 @@ public enum WxCodeEnum {
     code1(-1,"系统繁忙，此时请开发者稍候再试"),
     code2(0,"请求成功"),
     code3(40001,"获取 access_token 时 AppSecret 错误，或者 access_token 无效。请开发者认真比对 AppSecret 的正确性，或查看是否正在为恰当的公众号调用接口"),
-    code4(40002,"不合法的凭证类型"),
+    code4(40002,"不合法的凭证类型，请确保 grant_type 字段值为 client_credential"),
     code5(40003,"不合法的 OpenID ，请开发者确认 OpenID （该用户）是否已关注公众号，或是否是其他公众号的 OpenID"),
     code6(40004,"不合法的媒体文件类型"),
     code7(40005,"不合法的文件类型"),

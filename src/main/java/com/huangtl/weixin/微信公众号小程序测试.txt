@@ -1,0 +1,10 @@
+公众号和小程序unionId机制测试
+
+小程序app.js文件处理逻辑
+一、app.js文件，登录流程
+登录流程图详见：https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html
+
+简单的说就是：wx.checkSession -》 wx.login -》 code2Session（服务端）
+checkSession：https://developers.weixin.qq.com/miniprogram/dev/api/wx.checkSession.html
+login：https://developers.weixin.qq.com/miniprogram/dev/api/wx.login.html
+code2Session（服务端）：https://developers.weixin.qq.com/miniprogram/dev/api/code2Session.html

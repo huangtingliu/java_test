@@ -1,7 +1,8 @@
-package com.huangtl.weixin;
+package com.huangtl.weixin.controller;
 
 import com.huangtl.weixin.enums.MsgType;
 import com.huangtl.weixin.service.MsgService;
+import com.huangtl.weixin.utils.MPUtils;
 import com.huangtl.weixin.utils.MessgaeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,7 @@ public class WxController {
         System.out.println(timestamp);
         System.out.println(nonce);
         System.out.println(echostr);
-        boolean ok = WxUtils.checkToken( signature, timestamp, nonce, echostr);
+        boolean ok = MPUtils.checkToken( signature, timestamp, nonce, echostr);
         if(ok){
             response.getWriter().print(echostr);
             System.out.println("验证通过");
@@ -102,6 +103,16 @@ public class WxController {
 
     }
 
+    @RequestMapping("createMenu")
+    @ResponseBody
+    public String createMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if("vserve".equals(request.getParameter("code"))) {
+            boolean success = MPUtils.createMenu();
+
+            return success?"成功":"创建失败";
+        }
+        return "错误请求";
+    }
 
     /**
      * 网页授权微信回调页面

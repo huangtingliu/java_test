@@ -1,7 +1,7 @@
 package com.huangtl.weixin.scheduler;
 
-import com.huangtl.weixin.WxUtils;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.huangtl.weixin.utils.MPUtils;
+import com.huangtl.weixin.utils.MiniUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,8 +14,11 @@ public class AccessTokenScheduler {
      * 开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。
      * access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。
      */
-    @Scheduled(cron = "0 0 0 0 0 0 0")
+//    @Scheduled(cron = "0 0/90 * * * *")
     public void refreshAccessToken(){
-        WxUtils.getNewAccessToken();
+        System.out.println("refreshAccessToken Scheduled start===============");
+        MPUtils.getNewAccessToken();
+        MiniUtils.getNewAccessToken();
+        System.out.println("refreshAccessToken Scheduled end===============");
     }
 }

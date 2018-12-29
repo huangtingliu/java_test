@@ -12,7 +12,6 @@ import java.util.Map;
 
 
 /**
- * 中联车网自定义响应结构
  * @author Administrator
  *
  */

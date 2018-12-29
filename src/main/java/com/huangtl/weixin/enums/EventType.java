@@ -22,6 +22,9 @@ public enum EventType {
     /**点击菜单跳转链接时的事件推送*/
     VIEW,
 
+    /**小程序跳转*/
+    VIEW_MINIPROGRAM,
+
     /**模版消息发送任务完成*/
     TEMPLATESENDJOBFINISH;
 }
