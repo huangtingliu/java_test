@@ -10,18 +10,18 @@ public class Constants {
 
 
     /**公众号*/
-    public static final String MP_APPID="";// TODO: 2018/12/29  公众号appid
-    public static final String MP_APPSECRET="";// TODO: 2018/12/29  公众号secret
-    /**小程序*/
-    public static final String MINI_APPID="";// TODO: 2018/12/29  小程序appid
-    public static final String MINI_APPSECRET="";// TODO: 2018/12/29  小程序secret
+    public static final String MP_APPID="";
+    public static final String MP_APPSECRET="";
+    /**服务商小程序*/
+    public static final String MINI_APPID="";
+    public static final String MINI_APPSECRET="";
 
     /**接入微信服务器TOKEN验证token*/
     public static final String TOKEN="huangtl";
 
     /**公众号redis存储access_token的key值*/
     public static final String MP_ACCESS_TOKEN_KEY = "MP_WX_ACCESS_TOKEN";
-    /**小程序redis存储access_token的key值*/
+    /**服务商小程序redis存储access_token的key值*/
     public static final String MINI_ACCESS_TOKEN_KEY = "MINI_WX_ACCESS_TOKEN";
 
     /**微信返回成功的CODE*/

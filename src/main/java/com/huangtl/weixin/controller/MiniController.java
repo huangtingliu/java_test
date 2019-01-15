@@ -2,6 +2,7 @@ package com.huangtl.weixin.controller;
 
 import com.huangtl.redis.RedisTest;
 import com.huangtl.utils.JsonUtils;
+import com.huangtl.weixin.Constants;
 import com.huangtl.weixin.bean.encryption.MiniUserInfoDecryptedData;
 import com.huangtl.weixin.bean.encryption.MiniUserInfoEncryptedData;
 import com.huangtl.weixin.bean.result.AjaxJson;
@@ -18,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +64,7 @@ public class MiniController {
 
         String code = request.getParameter("code");
 
-        Code2Session code2Session = userService.code2Session(code);
+        Code2Session code2Session = userService.code2Session(code, Constants.MINI_APPID, Constants.MINI_APPSECRET);
         if(!code2Session.isSuccess()){
             AjaxJson.fail(code2Session, WxCodeEnum.getMsgByCode(code2Session.getErrcode()));
         }

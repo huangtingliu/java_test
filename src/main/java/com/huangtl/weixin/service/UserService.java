@@ -7,6 +7,7 @@ import com.huangtl.weixin.Constants;
 import com.huangtl.weixin.bean.WxUserInfo;
 import com.huangtl.weixin.bean.result.Code2Session;
 import com.huangtl.weixin.utils.MPUtils;
+import com.huangtl.weixin.utils.WxUtils;
 import org.jsoup.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,11 @@ public class UserService {
      *
      * 登录凭证校验。通过 wx.login() 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。
      */
-    public Code2Session code2Session(String code){
+    public Code2Session code2Session(String code,String appid,String appsecret){
         if(StringUtils.isEmpty(code)){
             return null;
         }
-        String result = HttpUtils.get(String.format(Constants.URL_CODE2SESSION, Constants.MINI_APPID,Constants.MINI_APPSECRET,code));
+        String result = HttpUtils.get(String.format(Constants.URL_CODE2SESSION, appid, appsecret, code));
 
         Code2Session code2Session = JsonUtils.jsonToPojo(result, Code2Session.class);
 
@@ -79,7 +80,8 @@ public class UserService {
      * @return
      */
     public WxUserInfo getWxUserInfoByOpenId(String openid){
-        String userInfoResult = MPUtils.getCheckToken(Constants.URL_USER_INFO_GET, MPUtils.getAccessToken(), openid);
+        WxUtils mpWxUtil = MPUtils.getMPWxUtil();
+        String userInfoResult = mpWxUtil.getCheckToken(Constants.URL_USER_INFO_GET, mpWxUtil.getAccessToken(), openid);
         WxUserInfo wxUserInfo = JsonUtils.jsonToPojo(userInfoResult, WxUserInfo.class);
 
         return wxUserInfo;

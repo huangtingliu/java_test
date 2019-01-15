@@ -2,6 +2,7 @@ package com.huangtl.weixin.scheduler;
 
 import com.huangtl.weixin.utils.MPUtils;
 import com.huangtl.weixin.utils.MiniUtils;
+import com.huangtl.weixin.utils.WxUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,8 +18,10 @@ public class AccessTokenScheduler {
 //    @Scheduled(cron = "0 0/90 * * * *")
     public void refreshAccessToken(){
         System.out.println("refreshAccessToken Scheduled start===============");
-        MPUtils.getNewAccessToken();
-        MiniUtils.getNewAccessToken();
+        WxUtils wxUtilsMP = MPUtils.getMPWxUtil();
+        wxUtilsMP.getNewAccessToken();
+        WxUtils wxUtilsMini = MiniUtils.getServicerWxUtil();
+        wxUtilsMini.getNewAccessToken();
         System.out.println("refreshAccessToken Scheduled end===============");
     }
 }

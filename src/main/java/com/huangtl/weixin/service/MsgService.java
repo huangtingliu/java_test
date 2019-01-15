@@ -12,6 +12,7 @@ import com.huangtl.weixin.bean.msg.TemplateMsgNewOrder;
 import com.huangtl.weixin.enums.EventType;
 import com.huangtl.weixin.utils.MPUtils;
 import com.huangtl.weixin.utils.MessgaeUtils;
+import com.huangtl.weixin.utils.WxUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -174,7 +175,8 @@ public class MsgService {
         }
         System.out.println(msgJson);
 
-        String result = MPUtils.postCheckToken(Constants.URL_TEMPLATE_SEND,msgJson, MPUtils.getAccessToken());
+        WxUtils mpWxUtil = MPUtils.getMPWxUtil();
+        String result = mpWxUtil.postCheckToken(Constants.URL_TEMPLATE_SEND,msgJson, mpWxUtil.getAccessToken());
         System.out.println(result);
     }
 
