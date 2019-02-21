@@ -88,7 +88,7 @@ public class MsgService {
                 case CLICK:
                     //菜单单击
                     MenuEvent menuEvent = JsonUtils.mapToBean(map,MenuEvent.class);
-
+                    userService.saveOpenid(menuEvent.getFromUserName());
     //                sendMsg.setMsgId("11111111111");
 //                    sendMsg.setContent("你点击了菜单："+menuEvent.getEventKey());
                     sendMsg.setContent("敬请期待");
@@ -104,10 +104,14 @@ public class MsgService {
                     break;
                 case VIEW:
                     //菜单跳转
+                    MenuEvent menuViewEvent = JsonUtils.mapToBean(map,MenuEvent.class);
+                    userService.saveOpenid(menuViewEvent.getFromUserName());
                     System.out.println("用户点击菜单发生跳转");
                     break;
                 case VIEW_MINIPROGRAM:
                     //小程序跳转
+                    MenuEvent menuMiniEvent = JsonUtils.mapToBean(map,MenuEvent.class);
+                    userService.saveOpenid(menuMiniEvent.getFromUserName());
                     System.out.println("用户点击菜单发生小程序跳转");
                     break;
                 case TEMPLATESENDJOBFINISH:

@@ -66,6 +66,18 @@ public class WxUtils {
     }
 
     /**
+     * 获取accessToken和参数的拼装url
+     * @return
+     */
+    public static String getTokenParamUrl(String url,String accessToken,String ...urlParam){
+        url = url.replaceFirst("%s",accessToken);
+        for(int i =0;i<urlParam.length;i++){
+            url = url.replaceFirst("%s",urlParam[i]);
+        }
+        return url;
+    }
+
+    /**
      * 检查token的POST请求，如果是token过期失败会重新获取token并使用新的token重新提交
      * @param url 请求路径 accessToken参数一点要在第一个参数
      * @param param 业务请求参数，不包括accessToken
@@ -74,22 +86,20 @@ public class WxUtils {
      * @return
      */
     public String postCheckToken(String url,String param,String accessToken,String ...urlParam){
-        url = url.replaceFirst("%s",accessToken);
-        for(int i =0;i<urlParam.length;i++){
-            url = url.replaceFirst("%s",urlParam[i]);
-        }
-        String result = HttpUtils.post(url, param);
+
+        String result = HttpUtils.post(getTokenParamUrl(url,accessToken,urlParam), param);
         WxResult wxResult = WxUtils.getWxResult(result);
         if(!wxResult.isSuccess()){
             System.out.println(WxCodeEnum.getMsgByCode(wxResult.getErrcode()));
             if(isAccessTokenErr(wxResult)){
-                result = HttpUtils.post(String.format(url, getAccessToken(),urlParam), param);
+                result = HttpUtils.post(getTokenParamUrl(url, getAccessToken(),urlParam), param);
             }else {
 
             }
         }
         return result;
     }
+
     /**
      *
      * 检查token的GET请求，如果是token过期失败会重新获取token并使用新的token重新提交
@@ -99,16 +109,13 @@ public class WxUtils {
      * @+
      */
     public String getCheckToken(String url,String accessToken,String ...urlParam){
-        url = url.replaceFirst("%s",accessToken);
-        for(int i =0;i<urlParam.length;i++){
-            url = url.replaceFirst("%s",urlParam[i]);
-        }
-        String result = HttpUtils.get(url);
+
+        String result = HttpUtils.get(getTokenParamUrl(url,accessToken,urlParam));
         WxResult wxResult = WxUtils.getWxResult(result);
         if(!wxResult.isSuccess()){
             System.out.println(WxCodeEnum.getMsgByCode(wxResult.getErrcode()));
             if(isAccessTokenErr(wxResult)){
-                result = HttpUtils.get(String.format(url, getAccessToken(),urlParam));
+                result = HttpUtils.get(getTokenParamUrl(url, getAccessToken(),urlParam));
             }else {
 
             }
