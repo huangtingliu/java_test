@@ -17,6 +17,7 @@
     
     <!--指定编译器版本-->
     <properties>
+        <start-class>com.huangtl.Application</start-class>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -103,14 +104,33 @@
             <version>1.4</version>
         </dependency>
 
+
+        <!--emoji表情处理-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>java-emoji-converter</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.1</version>
+            <classifier>jdk15</classifier>
+        </dependency>
     </dependencies>
 
     <!-- Package as an executable jar -->
     <build>
+        <finalName>location</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.huangtl.Application</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -118,9 +138,9 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
+                <!--<configuration>
                     <includeSystemScope>true</includeSystemScope>
-                </configuration>
+                </configuration>-->
             </plugin>
 
             <plugin>
@@ -147,7 +167,14 @@
         </plugins>
 
         <resources>
-
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**.*</include>
+                    <include>**/*.*</include><!-- i18n能读取到 -->
+                    <include>**/*/*.*</include>
+                </includes>
+            </resource>
             <resource>
 
                 <directory>lib</directory>
@@ -163,4 +190,5 @@
             </resource>
         </resources>
     </build>
+
 </project>

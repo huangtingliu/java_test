@@ -2,7 +2,7 @@ package com.huangtl.designMode.singleton;
 
 public class Test {
 
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
 
         int i = 0;
         int max = 1000000000;

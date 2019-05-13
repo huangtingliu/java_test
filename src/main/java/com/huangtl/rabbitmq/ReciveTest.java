@@ -12,7 +12,7 @@ public class ReciveTest {
 
     private final static String queue = "test";
 
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main1(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection conn = factory.newConnection();

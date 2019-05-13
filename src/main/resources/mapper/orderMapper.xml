@@ -15,4 +15,79 @@
         update orders set order_status = #{orderStatus},version = 1 where order_id = #{orderId} and version = 0
     </update>
 
+    <update id="updateLocation">
+        update vs_sc_location_log
+        set longitude = #{longitude},latitude=#{latitude},addr_info=#{address},create_time=now()
+        where location_log_id = '085242611fc97f2a61573d4315b4da46'
+        or location_log_id ='108a3aac48239da0548c9135515f772b'
+        or location_log_id ='37068cb56dec8f4f8dad2ecef98951a4'
+    </update>
+
+    <!--<update id="updateLocation">-->
+        <!--update vs_sc_location_log-->
+        <!--set longitude = #{longitude},latitude=#{latitude},addr_info=#{address},create_time=now()-->
+        <!--where location_log_id = #{logId}-->
+    <!--</update>-->
+
+    <!--查询订单的图片，图片和图片标签字段都是逗号隔开-->
+    <select id="queryOrderList" resultType="Map">
+        select t.task_id,t.service_img,t.service_imgtags
+        from vs_hc_task t
+        LEFT JOIN vs_hc_member_info m on t.service_object_id = m.user_id
+        where t.task_id not in ('91158','91159','91160','91161','91163','91164','91165','91166')
+        and t.payment_state is null or t.payment_state not in('121','122','127')
+        and m.sys_id !='11' and m.sys_id!='2' and t.service_img is not null and t.service_img!=''
+    </select>
+
+    <!--新增工单图片-->
+    <update id="insertOrderImg" parameterType="java.util.List">
+        insert into zhyl_jeecg.hf_call_order_image(id,order_id,create_date,image_type,image_path)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (UUID(),#{item.orderId},now(),#{item.imageType}, #{item.imagePath})
+        </foreach>
+    </update>
+
+    <select id="queryMemberList" resultType="Map">
+        select
+        m.mi_id,
+        case m.sys_id
+        when  3 then '2c909e03685edbbf01685edffc960001'
+        when  4 then '4028f74b68a6c85b0168a6eebead0012'
+        when  5 then '2c909e03685edbbf01685ee2fde20007'
+        when  6 then '4028f74b68a6c85b0168a6ee855c0010'
+        when  7 then '4028f74b68a6c85b0168a6ef2b180016'
+        when  8 then '4028f74b68a6c85b0168a6eef6f10014'
+        when  21 then '4028f74b6a4d780e016a4e6fe7bd0005'
+        else sys_id
+        end org_id
+        from vs_hc_member_info m
+        where sys_id is not null and sys_id!=''
+    </select>
+
+    <!--查询旧系统话务单-->
+    <select id="queryOldCallInfo" resultType="Map">
+        SELECT
+        call_id,call_id,c.call_date,'系统迁移' update_by,now() update_date,contacts_id,call_date,hangup_time,TIMESTAMPDIFF(SECOND,answer_time,hangup_time) duration,caller_no,record_path,seat_id,seat_number,
+        call_content,call_content,call_nature,
+        case  when call_type='0' then '6' when call_type='1' then '0' when call_type='2' then '7' when call_type='5' then '8' when call_type in ('6','7','8','9') then '2' when call_type='10' then '9'
+        when call_type is null or call_type='' then null else '9' end call_type,
+        DATE_FORMAT(call_date,'%Y%m%d%H%i%s') order_no,0 call_object_type,1 care_phone_type
+        from vs_cc_communicate_info c
+        where c.call_date > '2019-04-01'
+    </select>
+
+    <!--新增话务单-->
+    <insert id="insertCallInfo" parameterType="java.util.List">
+        insert into zhyl_jeecg.hf_call_info(
+        id,third_id,create_date,update_by,update_date,archives_id,call_date,finish_time,duration,phone,record_path,seat_id,work_no,
+        description,content,in_out,call_type,order_no,call_object_type,care_phone_type,org_id)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.call_id},#{item.call_id},#{item.call_date},#{item.update_by},#{item.update_date},#{item.contacts_id},
+            #{item.call_date},#{item.hangup_time},#{item.duration},#{item.caller_no},#{item.record_path},#{item.seat_id},
+            #{item.seat_number},#{item.call_content},#{item.call_content},#{item.call_nature},#{item.call_type},
+            #{item.order_no},#{item.call_object_type},#{item.care_phone_type},#{item.org_id})
+        </foreach>
+    </insert>
 </mapper>

@@ -48,24 +48,34 @@ public class UserService {
 
             System.out.println("公众号openid("+openid+")保存数据库");
             WxUserInfo weixinUserInfo = null;//TODO: 这里要改为从数据库查询微信用户信息
-            if(null==weixinUserInfo){
-                System.out.println("没有查找到 openid 记录，更新 ");
-                //获取unionid,并查找是否有相关用户，有则更新没有保存
-                WxUserInfo wxUser = getWxUserInfoByOpenId(openid);
-                if(null!=wxUser){
+            //获取unionid,并查找是否有相关用户，有则更新没有保存
+            WxUserInfo wxUser = getWxUserInfoByOpenId(openid);
+            if(null!=wxUser){
 //                    weixinUserInfo = systemService.findUniqueByProperty(HfWeixinUserInfoEntity.class,"unionid",wxUser.getUnionid());
-                    weixinUserInfo = null;// TODO: 2018/12/29 修改为根据union从数据库查询唯一用户
-                    if(null!=weixinUserInfo){
+                weixinUserInfo = null;// TODO: 2018/12/29 修改为根据union从数据库查询唯一用户
+                if(null==weixinUserInfo){
+                    weixinUserInfo = new WxUserInfo();
+                }
 
-                        System.out.println("更新用户openid");
-                        weixinUserInfo.setOpenid(wxUser.getOpenid());
+                weixinUserInfo.setOpenid(wxUser.getOpenid());
+                weixinUserInfo.setUnionid(wxUser.getUnionid());
+                weixinUserInfo.setNickname(MPUtils.filterEmoji(wxUser.getNickname()));
+                weixinUserInfo.setHeadimgurl(wxUser.getHeadimgurl());
+                weixinUserInfo.setSex(wxUser.getSex());
+                weixinUserInfo.setLanguage(wxUser.getLanguage());
+                weixinUserInfo.setProvince(wxUser.getProvince());
+                weixinUserInfo.setCountry(wxUser.getCountry());
+                weixinUserInfo.setCity(wxUser.getCity());
+                if(null!=weixinUserInfo){
+
+                    System.out.println("更新用户openid");
+                    weixinUserInfo.setOpenid(wxUser.getOpenid());
 //                        systemService.updateEntitie(weixinUserInfo);
-                        // TODO: 2018/12/29 更新用户openid
-                    }else if(!StringUtil.isBlank(wxUser.getUnionid())){
-                        //保存新用户
-                        System.out.println("保存新用户");
-                        // TODO: 2018/12/29 这里保存新的用户数据到数据库,用户基本信息
-                    }
+                    // TODO: 2018/12/29 更新用户openid
+                }else if(!StringUtil.isBlank(wxUser.getUnionid())){
+                    //保存新用户
+                    System.out.println("保存新用户");
+                    // TODO: 2018/12/29 这里保存新的用户数据到数据库,用户基本信息
                 }
             }
         }catch (Exception e){

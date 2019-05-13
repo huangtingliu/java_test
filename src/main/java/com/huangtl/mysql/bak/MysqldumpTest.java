@@ -69,7 +69,7 @@ public class MysqldumpTest {
         return false;
     }
 
-    public static void main(String[] args){
+    public static void main1(String[] args){
         try {
             String filePath = new SimpleDateFormat("yyyy-MM-ddHHmmss").format(new Date())+".sql";
             if (exportDatabaseTool("localhost", "root", "root", "H:/backupDatabase", filePath, "test")) {

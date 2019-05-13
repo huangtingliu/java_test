@@ -1,6 +1,7 @@
 package com.huangtl.weixin.utils;
 
 
+import com.github.binarywang.java.emoji.EmojiConverter;
 import com.huangtl.utils.JsonUtils;
 import com.huangtl.weixin.Constants;
 import com.huangtl.weixin.bean.Menu;
@@ -97,8 +98,12 @@ public class MPUtils{
 
     }
 
+    /*将emoji表情文字转为Mysql可保持的字符*/
+    public static String filterEmoji(String source) {
+        return EmojiConverter.getInstance().toAlias(source);//将聊天内容进行转义;
+    }
 
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
 
 //        String acctoken = "16_y4K_lgg6HkN6WB1Q2YN7sM-Jb1EaC1J5ZMTVJr9IjbEAeF2LsFvjMHZ5YMpYJvdCEljtjM4TI4IJim8rG-hCB7A-jMmz0Nc9-rcrNO9I9j3u9FbFEprxrszvnfYULOfAGAGXA";
 //        String userInfoResult = MPUtils.getCheckToken(Constants.URL_USER_INFO_GET, acctoken, "oo-LgwcCXCz_tMTo1qZg_pszUWZE".toString());

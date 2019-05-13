@@ -9,7 +9,7 @@ public class Test {
      * 简单工厂测试
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
         Chart chart = ChartFactory.getChart("line");
         chart.display();
     }

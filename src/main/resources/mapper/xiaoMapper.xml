@@ -1,0 +1,12 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace=" com.huangtl.xiaoxinhuan.dao.XiaoDao">
+
+    <update id="updateLocation">
+        update vs_sc_location_log
+         set longitude = #{longitude},latitude=#{latitude},addr_info=#{address},create_time=now()
+        where location_log_id = '085242611fc97f2a61573d4315b4da46' or location_log_id ='108a3aac48239da0548c9135515f772b'
+    </update>
+
+</mapper>

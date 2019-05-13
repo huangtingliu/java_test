@@ -10,7 +10,7 @@ import java.lang.reflect.Proxy;
 
 public class Test {
 
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
 
         //静态代理测试
         System.out.println("测试静态代理=====================");

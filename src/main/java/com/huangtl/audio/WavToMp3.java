@@ -1,9 +1,9 @@
 package com.huangtl.audio;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class WavToMp3 {
     /**
@@ -41,7 +41,7 @@ public class WavToMp3 {
             run.freeMemory();
         }
     }
-    public static void main(String[] args) throws IOException {
+    public static void main1(String[] args) throws IOException {
 
         byte[] bytes = getContent("H:\\demo\\wav2mp3\\20180525112503946.wav");
         File file = new File("H:\\demo\\wav2mp3\\20180525112503946.wav");
