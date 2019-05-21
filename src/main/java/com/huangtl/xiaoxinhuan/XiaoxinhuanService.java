@@ -33,7 +33,7 @@ import java.util.*;
 
 @Service
 public class XiaoxinhuanService {
-	
+
     public final static String url = "http://openapi.mini361.com";
     public final static String key = "c9b5b882dcab6430dde8efb2b6bdca79";
 
@@ -123,7 +123,7 @@ public class XiaoxinhuanService {
 	    String maptype = "Tencent";
 		// TODO Auto-generated method stub
 		DefaultHttpClient httpClient = new DefaultHttpClient();
-		
+
         JSONObject jsonResult = null;
         String value="";
         String data="";
@@ -138,7 +138,7 @@ public class XiaoxinhuanService {
         jsonstr += "\"Imei\":" + Imei + ",";
         jsonstr += "\"Sign\":\"" + sign + "\"}";
         HttpPost method = new HttpPost(url+"/api/Location/Tracking");
-		
+
         try {
             if (null != jsonstr) {
                 // 解决中文乱码问题
@@ -178,15 +178,15 @@ public class XiaoxinhuanService {
 	}
 
 
-	
+
     //获取签名
     public static String GetSign(Map map){
         String paramsStr=handelMap(map);
         //System.out.println(MD5Util.MD5EncodeGBK(paramsStr).toUpperCase());
         return MD5Util.MD5EncodeGBK(paramsStr).toUpperCase();
     }
-    
-    
+
+
     //map->字符串
     public static String handelMap(Map<String,Object> map){
         String paramsStr="";
@@ -201,33 +201,33 @@ public class XiaoxinhuanService {
 
         return paramsStr+"&key="+key;
     }
-    
-    
+
+
 	public static JSONObject addressInfo(Double lat ,Double lng) {
 		// TODO Auto-generated method stub
-		
-		
+
+
 		Map<String,Object> paras=new LinkedHashMap<String,Object>();
-		
+
 
         String utl=url+"/api/Location/Address";
-        
+
         paras.put("Lat", lat);
-		
+
 		paras.put("Lng", lng);
-		
+
 		String sign=GetSign(paras);
-		
+
 		paras.put("sign", sign);
-		
-		
+
+
         HttpPost httpPost = new HttpPost(utl);
 
         httpPost.addHeader("Content-type","application/json;charset=utf-8");
         try {
-        	
+
         	String StringJson = JsonUtils.objectToJson(paras);
-        	
+
 			httpPost.setEntity(new StringEntity(StringJson, Charset.forName("UTF-8")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -235,7 +235,7 @@ public class XiaoxinhuanService {
 		}
         String request = HttpUtils.request(httpPost);
         JSONObject jsonResult = JSONObject.fromObject(request);
-        
+
 		return jsonResult;
 	}
 
@@ -329,6 +329,23 @@ public class XiaoxinhuanService {
         long costTime = endTime-startTime;
         System.out.println("花费"+costTime+"ms（"+(costTime/1000)/60+"分钟)");
     }
-	
-	
+
+    //替换话务为建宁水南中心的
+    public void transferCallOrg(){
+        List<Map> archiveIds = orderDao.queryRandArchiveIds();//获取需要更新的老人
+        List<String> callIds = orderDao.queryRandCallIds(archiveIds.size());
+
+
+            for (int i = 0; i < archiveIds.size(); i++) {
+                Map map = archiveIds.get(i);
+                if(callIds.size()>i) {
+                    String callId = callIds.get(i);
+                    map.put("callId", callId);
+                    System.out.println(map);
+                    orderDao.updateCallOrg(map);
+                }
+            }
+
+    }
+
 }

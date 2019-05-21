@@ -49,4 +49,12 @@ public class Application {
         xiaoxinhuanService.transferCallInfo();//迁移话务单
         return "hello world";
     }
+
+    //替换话务为建宁水南中心的
+    @RequestMapping("/transfer")
+    @ResponseBody
+    public String transfer(){
+        xiaoxinhuanService.transferCallOrg();
+        return "hello world";
+    }
 }

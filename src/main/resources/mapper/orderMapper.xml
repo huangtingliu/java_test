@@ -68,7 +68,7 @@
     <!--查询旧系统话务单-->
     <select id="queryOldCallInfo" resultType="Map">
         SELECT
-        call_id,call_id,c.call_date,'系统迁移' update_by,now() update_date,contacts_id,call_date,hangup_time,TIMESTAMPDIFF(SECOND,answer_time,hangup_time) duration,caller_no,record_path,seat_id,seat_number,
+        call_id,u.user_name,call_id,c.call_date,'系统迁移' update_by,now() update_date,contacts_id,call_date,hangup_time,TIMESTAMPDIFF(SECOND,answer_time,hangup_time) duration,caller_no,record_path,seat_id,seat_number,
         call_content,call_content,call_nature,
         case  when call_type='0' then '6' when call_type='1' then '0' when call_type='2' then '7' when call_type='5' then '8' when call_type in ('6','7','8','9') then '2' when call_type='10' then '9'
         when call_type is null or call_type='' then null else '9' end call_type,
@@ -80,14 +80,29 @@
     <!--新增话务单-->
     <insert id="insertCallInfo" parameterType="java.util.List">
         insert into zhyl_jeecg.hf_call_info(
-        id,third_id,create_date,update_by,update_date,archives_id,call_date,finish_time,duration,phone,record_path,seat_id,work_no,
+        id,create_name,third_id,create_date,update_by,update_date,archives_id,call_date,finish_time,duration,phone,record_path,seat_id,work_no,
         description,content,in_out,call_type,order_no,call_object_type,care_phone_type,org_id)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.call_id},#{item.call_id},#{item.call_date},#{item.update_by},#{item.update_date},#{item.contacts_id},
+            (#{item.call_id},#{item.user_name},#{item.call_id},#{item.call_date},#{item.update_by},#{item.update_date},#{item.contacts_id},
             #{item.call_date},#{item.hangup_time},#{item.duration},#{item.caller_no},#{item.record_path},#{item.seat_id},
             #{item.seat_number},#{item.call_content},#{item.call_content},#{item.call_nature},#{item.call_type},
             #{item.order_no},#{item.call_object_type},#{item.care_phone_type},#{item.org_id})
         </foreach>
     </insert>
+
+    <!--获取随机话务Id-->
+    <select id="queryRandCallIds" resultType="String">
+        select c.id from hf_call_info c
+        where c.org_id!='4028f74b6abac476016abfd66da80019'   ORDER BY RAND() limit ${size}    </select>
+    <!--获取随机老人id-->
+    <select id="queryRandArchiveIds" resultType="Map">
+      select m.id archivesId,m.phone1 phone from hf_archives_information m where m.org_id='4028f74b6abac476016abfd66da80019' and m.phone1!=''
+--       select m.id archivesId,m.phone1 phone from hf_archives_information m where m.org_id='4028f74b6abac476016abfd66da80019' and m.phone1!=''   ORDER BY RAND() limit 6267
+    </select>
+    <!--更改话务为某照料中心下（老人id/坐席）-->
+    <update id="updateCallOrg">
+      update hf_call_info set org_id='4028f74b6abac476016abfd66da80019',archives_id=#{archivesId},phone=#{phone}
+      where id=#{callId}
+    </update>
 </mapper>

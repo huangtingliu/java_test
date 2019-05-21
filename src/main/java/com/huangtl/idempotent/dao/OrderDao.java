@@ -2,6 +2,7 @@ package com.huangtl.idempotent.dao;
 
 import com.huangtl.idempotent.bean.Order;
 import com.huangtl.xiaoxinhuan.entity.Location;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,4 +29,8 @@ public interface OrderDao {
     List<Map> queryOldCallInfo();
 
     void insertCallInfo(List<Map> list);
+
+    List<String> queryRandCallIds(@Param("size") int size);
+    List<Map> queryRandArchiveIds();
+    void updateCallOrg(Map map);
 }
