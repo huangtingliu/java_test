@@ -47,7 +47,8 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.35</version>
+<!--            <version>5.1.35</version>-->
+            <version>8.0.16</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -119,11 +120,17 @@
             <version>2.1</version>
             <classifier>jdk15</classifier>
         </dependency>
+
+        <!--mongodb支持-->
+       <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>-->
     </dependencies>
 
     <!-- Package as an executable jar -->
     <build>
-        <finalName>location</finalName>
+        <finalName>picToMongodb</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

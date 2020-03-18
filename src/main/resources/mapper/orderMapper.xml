@@ -30,21 +30,34 @@
     <!--</update>-->
 
     <!--查询订单的图片，图片和图片标签字段都是逗号隔开-->
-    <select id="queryOrderList" resultType="Map">
+    <!--<select id="queryOrderList" resultType="Map">
         select t.task_id,t.service_img,t.service_imgtags
         from vs_hc_task t
         LEFT JOIN vs_hc_member_info m on t.service_object_id = m.user_id
         where t.task_id not in ('91158','91159','91160','91161','91163','91164','91165','91166')
         and t.payment_state is null or t.payment_state not in('121','122','127')
-        and m.sys_id !='11' and m.sys_id!='2' and t.service_img is not null and t.service_img!=''
+        and m.sys_id   is not null
+        and m.sys_id ='11' and m.sys_id!='2' and t.service_img is not null and t.service_img!=''
+    </select>-->
+    <select id="queryOrderList" resultType="Map">
+        select t.task_id,t.service_img,t.service_imgtags
+        from vs_hc_task t
+        LEFT JOIN base_user_t u on t.creater_user_id=u.user_id
+       WHERE  u.org_id='11' and (t.payment_state='21' or t.payment_state='22')
+         and ((t.task_sign_date >='2019-08-01' and task_outline not like '%上门%') or (t.task_sign_date >='2019-07-01' and task_outline  like '%上门%') )
+          and t.service_img is not null and t.service_img!=''
     </select>
-
+    <!--获取新平台临时表工单图片-->
+    <select id="queryOrderImgList" resultType="Map">
+        select id,imgs
+        from order_img
+    </select>
     <!--新增工单图片-->
     <update id="insertOrderImg" parameterType="java.util.List">
-        insert into zhyl_jeecg.hf_call_order_image(id,order_id,create_date,image_type,image_path)
+        insert into hf_call_order_image(id,order_id,create_date,image_type,image_path,sort_date)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (UUID(),#{item.orderId},now(),#{item.imageType}, #{item.imagePath})
+            (UUID(),#{item.orderId},#{item.createDate},1, #{item.imagePath}, #{item.sortDate})
         </foreach>
     </update>
 
@@ -58,7 +71,7 @@
         when  6 then '4028f74b68a6c85b0168a6ee855c0010'
         when  7 then '4028f74b68a6c85b0168a6ef2b180016'
         when  8 then '4028f74b68a6c85b0168a6eef6f10014'
-        when  21 then '4028f74b6a4d780e016a4e6fe7bd0005'
+        when  21 then '4028f74b6abac476016abfd66da80019'
         else sys_id
         end org_id
         from vs_hc_member_info m
@@ -74,6 +87,7 @@
         when call_type is null or call_type='' then null else '9' end call_type,
         DATE_FORMAT(call_date,'%Y%m%d%H%i%s') order_no,0 call_object_type,1 care_phone_type
         from vs_cc_communicate_info c
+        LEFT JOIN base_user_t u on c.seat_id = u.user_id
         where c.call_date > '2019-04-01'
     </select>
 
@@ -94,7 +108,7 @@
     <!--获取随机话务Id-->
     <select id="queryRandCallIds" resultType="String">
         select c.id from hf_call_info c
-        where c.org_id!='4028f74b6abac476016abfd66da80019'   ORDER BY RAND() limit ${size}    </select>
+        where c.org_id!='4028f74b6abac476016abfd66da80019' and c.call_type='2'   ORDER BY RAND() limit ${size}    </select>
     <!--获取随机老人id-->
     <select id="queryRandArchiveIds" resultType="Map">
       select m.id archivesId,m.phone1 phone from hf_archives_information m where m.org_id='4028f74b6abac476016abfd66da80019' and m.phone1!=''
@@ -105,4 +119,62 @@
       update hf_call_info set org_id='4028f74b6abac476016abfd66da80019',archives_id=#{archivesId},phone=#{phone}
       where id=#{callId}
     </update>
+
+
+
+
+    <!--一键通部分-->
+    <select id="queryYjtMemberList" resultType="Map">
+        select m.id,m.phone1,u.sim_code
+        from hf_archives_information m
+        LEFT JOIN hf_device_use u on u.person_id = m.id
+    </select>
+
+    <select id="queryYjtMemberRelationList" resultType="Map">
+        select r.id,r.archives_id,r.member_phone from hf_member_relation r where r.member_phone is not null and r.member_phone!=''
+    </select>
+
+    <!--查询备份的所有通话数据-->
+    <select id="queryYjtBackupCallList" resultType="Map">
+       select
+        t.start_date,t.end_date,t.phone_from,t.phone_to,t.work_no,DATE_FORMAT(start_date,'%Y%m%d%h%i%s') order_no,
+        if(t.in_out = 3,2,t.in_out) in_out,
+        IF(t.in_out = 3,2,if(t.phone_to='11831260057768688346',1,0)) call_type,
+        if(t.phone_to='11831260057768688346',1,0) danger_level,
+        if(t.result =1,0,5) call_result,
+        if(t.record !='',concat("rec/",t.record),t.record) record_path
+        ,u.id seat_id,u.realname
+        from call_20181203_20190708 t
+        LEFT JOIN t_s_base_user u on t.work_no = u.username
+
+    </select>
+
+    <!--插入备份数据-->
+    <insert id="insertYjtBackupCallList" parameterType="java.util.List">
+        insert into hf_call_info(
+        id,create_name,create_by,third_id,create_date,update_by,update_date,archives_id,
+        call_date,finish_time,phone,record_path,seat_id,work_no,
+        description,content,in_out,call_type,order_no,care_phone_type,call_result,danger_level,call_object_type,relation_id)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (REPLACE(uuid(),"-",""),#{item.realname},#{item.work_no},concat("bak_",REPLACE(uuid(),"-","")),#{item.start_date},'数据恢复',now(),#{item.archives_id},
+            #{item.start_date},#{item.end_date},#{item.phone},#{item.record_path},#{item.seat_id},#{item.work_no},
+            '','',#{item.in_out},#{item.call_type},#{item.order_no},#{item.care_phone_type},#{item.call_result},#{item.danger_level},#{item.call_object_type},#{item.relation_id})
+        </foreach>
+    </insert>
+
+
+    <select id="queryAllMemberPic" resultType="String">
+       select
+        p.pic_url
+        from vs_hc_member_pictures p
+/*--         where p.type ='1'  and upload_time > '2018-06-28' and upload_time &lt; '2018-09-01'
+--         where p.type ='1'  and upload_time > '2018-11-01' and upload_time &lt; '2019-02-01'*/
+        /*where p.type ='1'  and upload_time > '2019-02-01' and upload_time &lt; '2019-06-01'*/
+        /*where p.type ='1'  and upload_time > '2019-06-01' and upload_time &lt; '2019-09-01'*/
+        /*where p.type ='1'  and upload_time > '2018-06-28'*/
+        where p.type ='1' and upload_time > '2019-08-08'
+        ORDER BY p.upload_time
+
+    </select>
 </mapper>

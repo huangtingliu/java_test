@@ -6,12 +6,14 @@ import java.io.IOException;
 
 public class Test {
 
-    public static void main1(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         //String url = "http://en.wikipedia.org/wiki/Java_(programming_language)";
-        String url = "http://www.huangtl.com/";
+//        String url = "http://www.huangtl.com/";
+        String url = "http://www.yanglaocn.com/yanglaoyuan/yly/";
         WikiFetcher wf = new WikiFetcher();
         //Elements paragraphs = wf.fetchWikipedia(url,"#mw-content-text p");
-        Elements paragraphs = wf.fetchWikipedia(url,"#index-list");
+//        Elements paragraphs = wf.fetchWikipedia(url,"#index-list");
+        Elements paragraphs = wf.fetchWikipedia(url,".jiadiantucontext_ul");
         //Elements paragraphs = wf.fetchWikipedia(url);
 
         /**

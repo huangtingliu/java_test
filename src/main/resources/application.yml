@@ -24,8 +24,8 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #    jdbc-type-for-null: varchar
 
 #============自定义内容区域 开始==========
@@ -60,8 +60,15 @@ spring:
       max-evictable-idle-time-millis:
       filters:  stat #配置多个英文逗号分隔
 ##    name: test
-    url: jdbc:mysql://localhost:3306/test
-    username: root
+#    url: jdbc:mysql://localhost:3306/zhyl_jeecg
+    url: jdbc:mysql://rdsm55xrw601h5wf3msco.mysql.rds.aliyuncs.com:3306/zhyl_jeecg
+#    url: jdbc:mysql://rm-wz9x3244kisrid44yyo.mysql.rds.aliyuncs.com:3306/zhyl_prod?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+#    url: jdbc:mysql://localhost:3306/yjt
+#    username: root
+#    password: 123456
+#    username: vsprod
+#    password: vs@778899
+    username: root147
     password: vs778899
 #    # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
@@ -79,3 +86,16 @@ spring:
 #    testOnReturn: false
 #    poolPreparedStatements: true
 #    maxOpenPreparedStatements: 20
+#  data:
+#    mongodb:
+#      host: 120.79.46.177
+#      port: 27017
+#      database: vsyldbs-prod
+#      username: jobuser
+#      password: vsyldbs123QWEmki
+#      host: 127.0.0.1
+#      port: 27017
+#      database: test180628180901
+#      database: test181101190201
+#      database: test190201190601
+#      database: test190601190901

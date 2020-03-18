@@ -15,13 +15,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -40,7 +39,9 @@ public class XiaoxinhuanService {
     @Autowired
     private XiaoDao xiaoDao;
     @Autowired
-    private OrderDao orderDao;
+    private OrderDao orderDao;/*
+    @Autowired
+    private com.huangtl.mongodb.localpicToMongodb localpicToMongodb;*/
 
 //    @Scheduled(cron = "0 0/1 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
@@ -85,11 +86,12 @@ public class XiaoxinhuanService {
 //    @Scheduled(cron = "0 0/1 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
     public void upLoc(){
-        double lng = 119.366619;
-        double lat = 26.026583;
+        //公司 lng:119.211747; lat:26.037612
+        double lng = 119.211747;
+        double lat = 26.037612;
 
-//        String address =getAddress(lng,lat);
-        String address ="福建省福州市海峡国际会展中心8号馆";
+        String address =getAddress(lng,lat);
+//        String address ="福建省福州市海峡国际会展中心8号馆";
         Location location = new Location();
         location.setLatitude(lat);
         location.setLongitude(lng);
@@ -239,11 +241,14 @@ public class XiaoxinhuanService {
 		return jsonResult;
 	}
 
+	/*获取旧平台工单、上传mongodb*/
     public void transferOrderImg(){
         List<Map> paramList = new ArrayList<>();
 
         List<Map> list = orderDao.queryOrderList();
         System.out.println("获取要新增的订单总数："+list.size()+"条");
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long currentMillis = System.currentTimeMillis();
         for (Map map : list) {
 
             String task_id = MapUtils.getString(map,"task_id");
@@ -269,7 +274,17 @@ public class XiaoxinhuanService {
                             param.put("imageType","4");
                         }
                         param.put("imagePath",path);
+
+                        param.put("createDate", sdf.format(new Date(currentMillis + i*1000)));
                         paramList.add(param);
+//                        File file = new File("D:\\phpStudy\\PHPTutorial\\WWW\\vserve_tp"+path);
+//                        if(file.exists() && file.isFile()){
+//                            try {
+//                                localpicToMongodb.uploadFiles(file);
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
                     }
                 }
             }
@@ -277,7 +292,59 @@ public class XiaoxinhuanService {
         }
 
         System.out.println("新增订单图片数量："+paramList.size()+"条");
+//        orderDao.insertOrderImg(paramList);
+    }
+
+    /*将旧平台工单图片临时表数据添加到新平台工单图片表*/
+    public void insertImgByOrderImg(){
+        List<Map> paramList = new ArrayList<>();
+
+        List<Map> list = orderDao.queryOrderImgList();
+        System.out.println("获取要新增的订单总数："+list.size()+"条");
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long currentMillis = System.currentTimeMillis();
+        for (Map map : list) {
+
+            String orderId = MapUtils.getString(map,"id");
+            String service_img = MapUtils.getString(map,"imgs");
+            if(null!=service_img && !"".equals(service_img) ){
+
+                String[] imgs = service_img.split(",");
+                    int len = imgs.length;
+                    for (int i=0;i<len;i++){
+                        String path = imgs[i];
+                        if(StringUtils.isNotEmpty(path)){
+                            Map param = new HashMap();
+                            param.put("orderId",orderId);
+                            //格式：/Public/Uploads/2019-01-22/4c8227122c076d6c1d19407a772756d9.jpg
+                            //需转成oss路径/prod/pic/old/xx.jpg
+
+                            param.put("imagePath",getOssPath(path));
+                            Date date = new Date(currentMillis + i * 1000);
+                            param.put("createDate", sdf.format(date));
+                            param.put("sortDate",date.getTime());
+                            paramList.add(param);
+                        }
+                    }
+            }
+
+        }
+
+        System.out.println("新增订单图片数量："+paramList.size()+"条");
         orderDao.insertOrderImg(paramList);
+        System.out.println("新增订单图片完成");
+    }
+
+    //图片路径转OSS路径 /Public/Uploads/2019-01-22/xx.jpg =》 prod/pic/2019-01-22/xx.jpg
+    private static String getOssPath(String path){
+//        String ossPath = path.substring(27,path.length());
+        String ossPath = path.substring(16,path.length());
+        ossPath = "prod/pic/"+ossPath;
+        return ossPath;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getOssPath("/Public/Uploads/2019-01-22/xx.jpg"));
     }
 
     /*迁移话务单*/
@@ -348,4 +415,153 @@ public class XiaoxinhuanService {
 
     }
 
+
+
+    /*一键通部分*/
+    public void yjtRegainCallInfo(){
+        long startTime = System.currentTimeMillis();
+        //获取所有老人列表已电话为Key，id为value保存
+        List<Map> list = orderDao.queryYjtMemberList();
+
+        System.out.println("获取老人总数："+list.size());
+        Jedis jedis = RedisTest.getJedis();
+        int count = 0;
+        //        亲属列表
+        List<Map> relationList = orderDao.queryYjtMemberRelationList();
+
+        System.out.println("获取亲属总数："+relationList.size());
+        for (Map map : relationList) {
+            String id = MapUtils.getString(map, "id");
+            String archives_id = MapUtils.getString(map, "archives_id");
+            String member_phone = MapUtils.getString(map, "member_phone");
+            if(StringUtils.isNotEmpty(member_phone)){
+                jedis.set(member_phone,archives_id);
+                jedis.set(member_phone+"_relation_id",id);
+                jedis.set(member_phone+"_care_phone_type","3");
+                jedis.expire(member_phone,1800);
+                jedis.expire(member_phone+"_relation_id",1800);
+                jedis.expire(member_phone+"_care_phone_type",1800);
+                count++;
+                System.out.println(count);
+            }
+        }
+
+        for (Map map : list) {
+            String id = MapUtils.getString(map, "id");
+            String phone1 = MapUtils.getString(map, "phone1");
+            String sim_code = MapUtils.getString(map, "sim_code");
+            if(StringUtils.isNotEmpty(phone1)){
+                jedis.set(phone1,id);
+                jedis.set(phone1+"_care_phone_type","2");
+                jedis.expire(phone1,1800);
+                jedis.expire(phone1+"_care_phone_type",1800);
+                count++;
+                System.out.println(count);
+            }
+            if(StringUtils.isNotEmpty(sim_code)){
+                jedis.set(sim_code,id);
+                jedis.set(sim_code+"_care_phone_type","1");//手环类型
+                jedis.expire(sim_code,1800);
+                jedis.expire(sim_code+"_care_phone_type",1800);
+                count++;
+                System.out.println(count);
+            }
+        }
+
+
+        System.out.println("保存电话key总数："+count);
+
+//        2.查询备份的所有话务单，根据电话在上面的缓存中查询老人id,跟其他信息一起保存到通话表
+        List<Map> backupList = orderDao.queryYjtBackupCallList();
+        System.out.println("查询备份话务单总数："+backupList.size());
+        count = 0;
+        for (Map map : backupList) {
+            String in_out = MapUtils.getString(map, "in_out");
+            String phone_from = MapUtils.getString(map, "phone_from");
+            String phone_to = MapUtils.getString(map, "phone_to");
+            if("1".equals(in_out)){
+                //呼入则根据呼入号码获取老人id
+                String id = jedis.get(phone_from);
+                String care_phone_type = jedis.get(phone_from+"_care_phone_type");
+                map.put("archives_id",id);
+                map.put("care_phone_type",care_phone_type);
+                map.put("phone",phone_from);
+                map.put("call_object_type","0");
+            }else{
+                //呼出则根据呼出号码获取老人id
+                String id = jedis.get(phone_to);
+                String care_phone_type = jedis.get(phone_to+"_care_phone_type");
+                map.put("archives_id",id);
+                map.put("care_phone_type",care_phone_type);
+                map.put("phone",phone_to);
+                String call_object_type = "0";
+                if("3".equals(care_phone_type)){
+                    call_object_type = "2";//亲属
+                    String relation_id = jedis.get(phone_to+"_relation_id");
+                    map.put("relation_id",relation_id);
+                }
+                map.put("call_object_type",call_object_type);
+            }
+            count++;
+            System.out.println("话务"+count);
+        }
+
+//        3.插入新平台话务表
+        inserPart(backupList,0,1000);
+//        orderDao.insertYjtBackupCallList(backupList.subList(0,10000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(10000,20000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(20000,30000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(30000,40000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(40000,50000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(50000,60000));
+//        orderDao.insertYjtBackupCallList(backupList.subList(60000,backupList.size()));
+
+        long endTime = System.currentTimeMillis();
+        long costTime = endTime-startTime;
+        System.out.println("花费"+costTime+"ms（"+(costTime/1000)/60+"分钟)");
+    }
+
+    int num = 0;
+    private void inserPart(List<Map> list,int from,int to){
+        int size = 1000;
+            System.out.println(from+","+to);
+        if(list.size()>=to) {
+            orderDao.insertYjtBackupCallList(list.subList(from, to));
+        }else{
+            orderDao.insertYjtBackupCallList(list.subList(from,list.size()));
+        }
+        if(list.size()>=(to+size)){
+            inserPart(list,to,to+size);
+        }else{
+            orderDao.insertYjtBackupCallList(list.subList(to,list.size()));
+            System.out.println(to+","+list.size());
+        }
+
+    }
+
+    //恢复一键通老人最新关怀记录
+    public void yjtRegainCareInfo(){
+        long startTime = System.currentTimeMillis();
+
+        //获取一键通数据库迁移前的通话记录，按老人分组取最新的通话时间（2019-07-05之前）
+//        List<Map> list = orderDao.queryYjtMemberCareCallList();
+        List<Map> list = null;
+        System.out.println("获取老人最新通话总数："+list.size());
+        Jedis jedis = RedisTest.getJedis();
+        int count = 0;
+        for (Map map : list) {
+            String call_id = MapUtils.getString(map, "call_id");
+            String archives_id = MapUtils.getString(map, "archives_id");
+            String call_time = MapUtils.getString(map, "call_time");
+            String user_id = MapUtils.getString(map, "user_id");
+            String watch_call_id = MapUtils.getString(map, "watch_call_id");
+        }
+        System.out.println("保存电话key总数："+count);
+
+//        3.插入新平台关怀表
+
+        long endTime = System.currentTimeMillis();
+        long costTime = endTime-startTime;
+        System.out.println("花费"+costTime+"ms（"+(costTime/1000)/60+"分钟)");
+    }
 }

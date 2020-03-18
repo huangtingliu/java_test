@@ -45,8 +45,9 @@ public class Application {
     @RequestMapping("/addOrder")
     @ResponseBody
     public String hello1(){
-        //xiaoxinhuanService.transferOrderImg();//迁移工单图片
-        xiaoxinhuanService.transferCallInfo();//迁移话务单
+        xiaoxinhuanService.insertImgByOrderImg();//迁移工单图片oss
+//        xiaoxinhuanService.transferOrderImg();//迁移工单图片mongodb
+//        xiaoxinhuanService.transferCallInfo();//迁移话务单
         return "hello world";
     }
 
@@ -54,7 +55,14 @@ public class Application {
     @RequestMapping("/transfer")
     @ResponseBody
     public String transfer(){
-        xiaoxinhuanService.transferCallOrg();
+//        xiaoxinhuanService.transferCallOrg();
+        return "hello world";
+    }
+
+    @RequestMapping("/yjtRegainCallInfo")
+    @ResponseBody
+    public String yjtRegainCallInfo(){
+//        xiaoxinhuanService.yjtRegainCallInfo();
         return "hello world";
     }
 }
