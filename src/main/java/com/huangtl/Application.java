@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-@EnableScheduling
+//@EnableScheduling
 @MapperScan("com.huangtl.*.dao")
-@EnableTransactionManagement
+//@EnableTransactionManagement
 @RestController
 @SpringBootApplication
 public class Application {

@@ -41,7 +41,8 @@ spring:
   #profiles: dev
   datasource:
     druid:
-      driver-class-name: com.mysql.jdbc.Driver
+#      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 2
       max-active: 2
       max-idle: 2
@@ -60,16 +61,11 @@ spring:
       max-evictable-idle-time-millis:
       filters:  stat #配置多个英文逗号分隔
 ##    name: test
-#    url: jdbc:mysql://localhost:3306/zhyl_jeecg
-    url: jdbc:mysql://rdsm55xrw601h5wf3msco.mysql.rds.aliyuncs.com:3306/zhyl_jeecg
 #    url: jdbc:mysql://rm-wz9x3244kisrid44yyo.mysql.rds.aliyuncs.com:3306/zhyl_prod?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
-#    url: jdbc:mysql://localhost:3306/yjt
-#    username: root
-#    password: 123456
-#    username: vsprod
-#    password: vs@778899
-    username: root147
-    password: vs778899
+#    url: jdbc:mysql://localhost:3306/test
+    url: jdbc:mysql://localhost:3306/flowable?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
 #    # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
 #    driver-class-name: com.mysql.jdbc.Driver

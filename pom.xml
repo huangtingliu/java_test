@@ -139,6 +139,25 @@
             <artifactId>zkclient</artifactId>
             <version>0.10</version>
         </dependency>
+
+        <!--slf4j log4j-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
+        <!--flowable-->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter</artifactId>
+            <version>6.5.0</version>
+        </dependency>
     </dependencies>
 
     <!-- Package as an executable jar -->
