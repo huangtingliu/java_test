@@ -158,6 +158,15 @@
             <artifactId>flowable-spring-boot-starter</artifactId>
             <version>6.5.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>de.micromata.jak</groupId>
+            <artifactId>JavaAPIforKml</artifactId>
+            <version>2.2.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/java/com/huangtl/kml/JavaAPIforKml-2.2.0.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <!-- Package as an executable jar -->
