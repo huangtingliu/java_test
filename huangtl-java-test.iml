@@ -193,5 +193,14 @@
     <orderEntry type="library" name="Maven: org.flowable:flowable-spring-common:6.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.flowable:flowable-idm-spring:6.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.flowable:flowable-idm-engine-configurator:6.5.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: de.micromata.jak:JavaAPIforKml:2.2.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/main/java/com/huangtl/kml/JavaAPIforKml-2.2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
