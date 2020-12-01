@@ -1,5 +1,8 @@
 package com.huangtl;
 
+import com.huangtl.kml.KmlProperty;
+import com.huangtl.point.simplify.LatLng;
+import com.huangtl.point.simplify.Test;
 import com.huangtl.xiaoxinhuan.XiaoxinhuanService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,10 +61,32 @@ public class Application {
         return "hello world";
     }
 
+
     @RequestMapping("/yjtRegainCallInfo")
     @ResponseBody
     public String yjtRegainCallInfo(){
 //        xiaoxinhuanService.yjtRegainCallInfo();
         return "hello world";
+    }
+
+   /* @CrossOrigin(origins = "*")
+    @RequestMapping("/points")
+    @ResponseBody
+    public LatLng[] points(double t){
+        return Test.getSimplifiedPoints(t);
+    }*/
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/points")
+    @ResponseBody
+    public KmlProperty points(double t){
+        return Test.getPoints(t);
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/allpoints")
+    @ResponseBody
+    public LatLng[] getPoints(){
+        return Test.getPoints();
     }
 }

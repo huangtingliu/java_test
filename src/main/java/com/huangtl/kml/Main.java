@@ -1,19 +1,13 @@
 package com.huangtl.kml;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class Main {
     public static void main(String[] args) {
-        KmlProperty kmlProperty;
-        ParsingKmlUtil parsingKmlUtil = new ParsingKmlUtil();
-        String path = Main.class.getClassLoader().getResource("").getPath();
 
-//        String path1 = this.getClass().getResource("").getPath();
-        System.out.println(path);
-        File file = new File(path+"/test.kml");
-        kmlProperty = parsingKmlUtil.parseKmlForJAK(file);
-        assert kmlProperty != null;
-
+        KmlProperty kmlProperty = getKmlData();
         if (kmlProperty.getKmlPoints().size() > 0) {
             System.out.println("点====");
             for (KmlPoint k : kmlProperty.getKmlPoints()) {
@@ -32,5 +26,24 @@ public class Main {
                 System.out.println("面【"+k.getName()+"】        ====》       "+k.getPoints());
             }
         }
+    }
+
+    public static KmlProperty getKmlData(){
+        KmlProperty kmlProperty = null;
+        ParsingKmlUtil parsingKmlUtil = new ParsingKmlUtil();
+        String path = Main.class.getClassLoader().getResource("").getPath();
+
+//        String path1 = this.getClass().getResource("").getPath();
+        System.out.println(path);
+        File file = new File(path+"/test.kml");
+        try {
+            kmlProperty = parsingKmlUtil.parseKmlByInputstream(new FileInputStream(file));
+            assert kmlProperty != null;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+//        kmlProperty = parsingKmlUtil.parseKmlForJAK(file);
+
+        return kmlProperty;
     }
 }

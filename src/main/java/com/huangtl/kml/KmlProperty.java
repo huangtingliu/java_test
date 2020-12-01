@@ -2,7 +2,7 @@ package com.huangtl.kml;
 
 import java.util.List;
 
-class KmlProperty {
+public class KmlProperty {
     private List<KmlPoint> kmlPoints;
     private List<KmlLine> kmlLines;
     private List<KmlPolygon> kmlPolygons;

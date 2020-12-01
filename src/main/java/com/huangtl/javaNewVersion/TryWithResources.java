@@ -3,11 +3,11 @@ package com.huangtl.javaNewVersion;
 import java.io.*;
 
 /**
- * @Description java版本语法示例
+ * @Description try-with-resources java版本语法示例
  * @Author huangtl
  * @Date 2020/11/27 14:22
  **/
-public class java8 {
+public class TryWithResources {
 
     /**
      * try-with-resources
@@ -38,12 +38,12 @@ public class java8 {
         }
 
         //3.jdk9才支持
-        BufferedReader reader4 = new BufferedReader(new InputStreamReader(input));
+        /*BufferedReader reader4 = new BufferedReader(new InputStreamReader(input));
         BufferedReader reader5 = new BufferedReader(new InputStreamReader(input));
         try (reader4;reader5){
             System.out.println(reader4.readLine());
             System.out.println(reader5.readLine());
-        }
+        }*/
     }
 
 }
