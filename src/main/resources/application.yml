@@ -63,9 +63,9 @@ spring:
 ##    name: test
 #    url: jdbc:mysql://rm-wz9x3244kisrid44yyo.mysql.rds.aliyuncs.com:3306/zhyl_prod?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
 #    url: jdbc:mysql://localhost:3306/test
-    url: jdbc:mysql://localhost:3306/flowable?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+    url: jdbc:mysql://192.168.67.129:3306/ccp?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
     username: root
-    password: 123456
+    password: root
 #    # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
 #    driver-class-name: com.mysql.jdbc.Driver

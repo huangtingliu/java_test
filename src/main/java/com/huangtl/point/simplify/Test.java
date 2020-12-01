@@ -7,7 +7,6 @@ import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Description simplify-java测试，简化经纬度轨迹点
@@ -49,21 +48,21 @@ public class Test {
     }
 
     public static LatLng[] getPoints(){
-        KmlProperty kmlProperty = Main.getKmlData();
+        KmlData kmlData = Main.getKmlData();
 
         List<Coordinate> allPoints = new ArrayList();
-        if (kmlProperty.getKmlPoints().size() > 0) {
-            for (KmlPoint k : kmlProperty.getKmlPoints()) {
+        if (kmlData.getKmlPoints().size() > 0) {
+            for (KmlPoint k : kmlData.getKmlPoints()) {
                 allPoints.addAll(k.getPoints());
             }
         }
-        if (kmlProperty.getKmlLines().size() > 0) {
-            for (KmlLine k : kmlProperty.getKmlLines()) {
+        if (kmlData.getKmlLines().size() > 0) {
+            for (KmlLine k : kmlData.getKmlLines()) {
                 allPoints.addAll(k.getPoints());
             }
         }
-        if (kmlProperty.getKmlPolygons().size() > 0) {
-            for (KmlPolygon k : kmlProperty.getKmlPolygons()) {
+        if (kmlData.getKmlPolygons().size() > 0) {
+            for (KmlPolygon k : kmlData.getKmlPolygons()) {
                 allPoints.addAll(k.getPoints());
             }
         }
@@ -71,25 +70,25 @@ public class Test {
         return listToArray(allPoints);
     }
 
-    public static KmlProperty getPoints(double tolerance){
-        KmlProperty kmlProperty = Main.getKmlData();
+    public static KmlData getPoints(double tolerance){
+        KmlData kmlData = Main.getKmlData();
 
         long start = System.currentTimeMillis();
         List<Coordinate> allPoints = new ArrayList();
-        if (kmlProperty.getKmlPoints().size() > 0) {
-            for (KmlPoint k : kmlProperty.getKmlPoints()) {
+        if (kmlData.getKmlPoints().size() > 0) {
+            for (KmlPoint k : kmlData.getKmlPoints()) {
                 allPoints.addAll(k.getPoints());
                 k.setPoints(simplified(tolerance,k.getPoints()));
             }
         }
-        if (kmlProperty.getKmlLines().size() > 0) {
-            for (KmlLine k : kmlProperty.getKmlLines()) {
+        if (kmlData.getKmlLines().size() > 0) {
+            for (KmlLine k : kmlData.getKmlLines()) {
                 allPoints.addAll(k.getPoints());
                 k.setPoints(simplified(tolerance,k.getPoints()));
             }
         }
-        if (kmlProperty.getKmlPolygons().size() > 0) {
-            for (KmlPolygon k : kmlProperty.getKmlPolygons()) {
+        if (kmlData.getKmlPolygons().size() > 0) {
+            for (KmlPolygon k : kmlData.getKmlPolygons()) {
                 allPoints.addAll(k.getPoints());
                 k.setPoints(simplified(tolerance,k.getPoints()));
             }
@@ -98,7 +97,7 @@ public class Test {
         long end = System.currentTimeMillis();
         System.out.println("总数量："+allPoints.size());
         System.out.println("耗时："+(end-start)+"ms");
-        return kmlProperty;
+        return kmlData;
     }
 
     /**

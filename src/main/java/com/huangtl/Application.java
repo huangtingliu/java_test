@@ -1,6 +1,6 @@
 package com.huangtl;
 
-import com.huangtl.kml.KmlProperty;
+import com.huangtl.kml.KmlData;
 import com.huangtl.point.simplify.LatLng;
 import com.huangtl.point.simplify.Test;
 import com.huangtl.xiaoxinhuan.XiaoxinhuanService;
@@ -79,7 +79,7 @@ public class Application {
     @CrossOrigin(origins = "*")
     @RequestMapping("/points")
     @ResponseBody
-    public KmlProperty points(double t){
+    public KmlData points(double t){
         return Test.getPoints(t);
     }
 
