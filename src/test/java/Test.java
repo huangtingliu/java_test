@@ -1,3 +1,5 @@
+import com.grapecity.documents.excel.IWorksheet;
+import com.grapecity.documents.excel.Workbook;
 import com.huangtl.utils.HttpUtils;
 import com.huangtl.utils.JsonUtils;
 
@@ -77,7 +79,7 @@ public class Test {
 //        List<Map> maps = JsonUtils.jsonToList(json, Map.class);
 //        System.out.println(maps);
         
-        List<String> list = new ArrayList<>();
+        /*List<String> list = new ArrayList<>();
         list.add("1");
         list.add("2");
         list.add("3");
@@ -91,8 +93,58 @@ public class Test {
         List<String> strings1 = list.subList(2, 4);
         List<String> strings2 = list.subList(4, list.size());
 
-        System.out.println("");
+        System.out.println("");*/
+
+
+        Workbook workbook = new Workbook();
+
+        SalesData datasource = new SalesData();
+        datasource.sales = new ArrayList<SalesRecord>();
+
+        SalesRecord record1 = new SalesRecord();
+        record1.area = "North America";
+        record1.city = "Chicago";
+        record1.category = "Consumer Electronics";
+        record1.name = "Bose 785593-0050";
+        record1.revenue = 92800;
+        datasource.sales.add(record1);
+
+        SalesRecord record2 = new SalesRecord();
+        record2.area = "North America";
+        record2.city = "New York";
+        record2.category = "Consumer Electronics";
+        record2.name = "Bose 785593-0050";
+        record2.revenue = 92800;
+        datasource.sales.add(record2);
+
+        SalesRecord record3 = new SalesRecord();
+        record3.area = "South America";
+        record3.city = "Santiago";
+        record3.category = "Consumer Electronics";
+        record3.name = "Bose 785593-0050";
+        record3.revenue = 19550;
+        datasource.sales.add(record3);
+//#endregion
+
+        IWorksheet worksheet = workbook.getWorksheets().get(0);
+
+// Data source would be bound to columns automatically.
+        worksheet.setDataSource(datasource.sales);
+// Save to an excel file
+        workbook.save("BindAutomatically.xlsx");
     }
+
+public static class SalesData {
+public ArrayList<SalesRecord> sales;
+}
+
+    public static class SalesRecord {
+public String area;
+public String city;
+public String category;
+public String name;
+public double revenue;
+}
 
     public static long calcDiff(Date dateSmall, Date dateBig){
         long nd = 1000 * 24 * 60 * 60;

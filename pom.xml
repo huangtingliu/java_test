@@ -185,6 +185,18 @@
             <artifactId>client-sdk</artifactId>
             <version>1.19.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>cn.smallbun.screw</groupId>
+            <artifactId>screw-core</artifactId>
+            <version>1.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.grapecity.documents</groupId>
+            <artifactId>gcexcel</artifactId>
+            <version>5.0.0</version>
+        </dependency>
     </dependencies>
 
     <!-- Package as an executable jar -->
